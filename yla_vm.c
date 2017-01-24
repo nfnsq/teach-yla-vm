@@ -326,43 +326,6 @@ int yla_vm_stack_push(yla_vm *vm, yla_int_type value)
 	return 1;
 }
 
-int yla_vm_stack_get_deep(yla_vm *vm, yla_int_type index, yla_int_type *value)
-{
-	yla_int_type state = yla_stack_get_deep(&vm->stack, index, value);
-	if (state == -10) {
-		vm->last_error = YLA_VM_ERROR_STACK_EMPTY;
-		return 0;
-	}
-	if (state == -20) {
-		vm->last_error = YLA_VM_ERROR_STACK_FULL;
-		return 0;
-	}
-	return 1;
-}
-
-int yla_vm_stack_set_deep(yla_vm *vm, yla_int_type index, yla_int_type value)
-{
-	yla_int_type state = yla_stack_set_deep(&vm->stack, index, value);
-	if (state == -10) {
-		vm->last_error = YLA_VM_ERROR_STACK_EMPTY;
-		return 0;
-	}
-	if (state == -20) {
-		vm->last_error = YLA_VM_ERROR_STACK_FULL;
-		return 0;
-	}
-	return 1;
-}
-
-int yla_vm_stack_tail_delete(yla_vm *vm, yla_int_type tail_size)
-{
-	if (!yla_stack_tail_delete(&vm->stack, tail_size)) {
-		vm->last_error = YLA_VM_ERROR_STACK_TAIL_TOO_LONG;
-		return 0;	
-	}
-	return 1;
-}
-
 /*
 Perform command by code of operation
 */
@@ -377,26 +340,6 @@ int yla_vm_do_command_internal(yla_vm *vm, yla_cop_type cop)
 	switch(cop) {
 
 		case CNOP:	
-			break;
-		
-		case CLOAD:
-			if (!yla_vm_get_value(vm, &op1)) {
-				return 0;
-			}
-			op2 = vm->vartable[op1];
-			if (!yla_vm_stack_push(vm, op2)) {
-				return 0;
-			}
-			break;
-		
-		case CSAVE:
-			if (!yla_vm_get_value(vm, &op1)) {
-				return 0;
-			}
-			if (!yla_vm_stack_pull(vm, &op2)) {
-				return 0;
-			}
-			vm->vartable[op1] = op2;
 			break;
 
 		case CPUSH:
@@ -435,7 +378,7 @@ int yla_vm_do_command_internal(yla_vm *vm, yla_cop_type cop)
 				}
 				//1st - array
 				else if (t2 == ARRAY) {
-					yla_int_type size;
+					int size;
 					if (!yla_vm_stack_pull(vm, &size)) {
 						return 0;
 					}
@@ -466,7 +409,7 @@ int yla_vm_do_command_internal(yla_vm *vm, yla_cop_type cop)
 			}
 			//2nd - array
 			else if (t1 == ARRAY) {
-				yla_int_type size2;
+				int size2;
 				yla_int_type arr[size2];
 				for (int i=0; i<size2; i++)
 				{
@@ -491,8 +434,8 @@ int yla_vm_do_command_internal(yla_vm *vm, yla_cop_type cop)
 					if (!yla_vm_stack_push(vm, op2)) {
 						return 0;
 					}
-					size++;
-					if (!yla_vm_stack_push(vm, size)) {
+					size2++;
+					if (!yla_vm_stack_push(vm, size2)) {
 						return 0;
 					}
 					if (!yla_vm_stack_push(vm, ARRAY)) {
@@ -501,7 +444,7 @@ int yla_vm_do_command_internal(yla_vm *vm, yla_cop_type cop)
 				}
 				//1st - array
 				else if (t2 == ARRAY) {
-					yla_int_type size1;
+					int size1;
 					yla_int_type arr1[size1];
 					for (int i=0; i<size1; i++)
 					{

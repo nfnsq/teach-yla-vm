@@ -177,21 +177,55 @@ static int test_code_limit()
 
 static int test_add()
 {
-    yla_cop_type prg[HEADER_SIZE + 6];
+    yla_cop_type prg[HEADER_SIZE + 14];
     yla_cop_type *ptr = prg;
 
-    put_header(&ptr, 1, 0, 6);
+    put_header(&ptr, 4, 0, 14);
+	put_commd(&ptr, CPUSH);
+    put_value(&ptr, NUMBER);
 	put_commd(&ptr, CPUSH);
     put_value(&ptr, 0x12);
-//	put_commd(&ptr, CPUSH);
-//  put_value(&ptr, 0x34);
-//	put_commd(&ptr, CADD);
-	put_commd(&ptr, COUT);
+	put_commd(&ptr, CPUSH);
+    put_value(&ptr, NUMBER);
+	put_commd(&ptr, CPUSH);
+    put_value(&ptr, 0x34);
+	put_commd(&ptr, CADD);
     put_commd(&ptr, CHALT);
 
     yla_vm vm;
 
-    YLATEST_ASSERT_TRUE(yla_vm_init(&vm, prg, HEADER_SIZE + 6), "normal");
+    YLATEST_ASSERT_TRUE(yla_vm_init(&vm, prg, HEADER_SIZE + 14), "normal");
+	YLATEST_ASSERT_TRUE(yla_vm_run(&vm), "normal");
+	YLATEST_ASSERT_TRUE(yla_vm_done(&vm), "normal");
+
+    return 0; 
+}
+static int test_array_add()
+{
+    yla_cop_type prg[HEADER_SIZE + 21];
+    yla_cop_type *ptr = prg;
+
+    put_header(&ptr, 6, 0, 21);
+	put_commd(&ptr, CPUSH);
+    put_value(&ptr, 0x12);
+	put_commd(&ptr, CPUSH);
+    put_value(&ptr, 0x02);
+	put_commd(&ptr, CPUSH);
+    put_value(&ptr, ARRAY);
+	
+	put_commd(&ptr, CPUSH);
+    put_value(&ptr, 0x34);
+	put_commd(&ptr, CPUSH);
+    put_value(&ptr, 0x02);
+	put_commd(&ptr, CPUSH);
+    put_value(&ptr, ARRAY);
+	
+	put_commd(&ptr, CADD);
+    put_commd(&ptr, CHALT);	
+
+    yla_vm vm;
+
+    YLATEST_ASSERT_TRUE(yla_vm_init(&vm, prg, HEADER_SIZE + 21), "normal");
 	YLATEST_ASSERT_TRUE(yla_vm_run(&vm), "normal");
 	YLATEST_ASSERT_TRUE(yla_vm_done(&vm), "normal");
 
@@ -210,4 +244,5 @@ YLATEST_BEGIN(yla_vm_test1)
   YLATEST_ADD_TEST_CASE(test_code_limit)
  */
   YLATEST_ADD_TEST_CASE(test_add)
+  YLATEST_ADD_TEST_CASE(test_array_add)
 YLATEST_END

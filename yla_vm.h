@@ -26,6 +26,8 @@
 #include "yla_type.h"
 #include <stddef.h>
 
+#define ARRAY 1
+#define NUMBER 2
 #define MAGIC_SIZE 3
 #define MAGIC_CODE1 0x796c
 #define MAGIC_CODE2 0x615f

@@ -325,6 +325,8 @@ Perform command by code of operation
 */
 int yla_vm_do_command_internal(yla_vm *vm, yla_cop_type cop)
 {
+	yla_int_type t1;
+	yla_int_type t2;
 	yla_int_type op1;
 	yla_int_type op2;
 	yla_int_type res;
@@ -344,15 +346,127 @@ int yla_vm_do_command_internal(yla_vm *vm, yla_cop_type cop)
 			break;
 
 		case CADD:
-			if (!yla_vm_stack_pull(vm, &op1)) {
+			if (!yla_vm_stack_pull(vm, &t1)) {
 				return 0;
 			}
-			if (!yla_vm_stack_pull(vm, &op2)) {
-				return 0;
+			//2nd - number
+			if (t1 == NUMBER) {
+				if (!yla_vm_stack_pull(vm, &op1)) {
+					return 0;
+				}
+				if (!yla_vm_stack_pull(vm, &t2)) {
+					return 0;
+				}
+				//1st - number
+				if (t2 == NUMBER) {
+					if (!yla_vm_stack_pull(vm, &op2)) {
+						return 0;
+					}
+					res = op2 + op1;
+					if (!yla_vm_stack_push(vm, res)) {
+						return 0;
+					}	
+					if (!yla_vm_stack_push(vm, NUMBER)) {
+						return 0;
+					}					
+				}
+				//1st - array
+				else if (t2 == ARRAY) {
+					yla_int_type size;
+					if (!yla_vm_stack_pull(vm, &size)) {
+						return 0;
+					}
+					yla_int_type arr[size];
+					for (int i=0; i<size; i++)
+					{
+						if (!yla_vm_stack_pull(vm, &arr[i])) {
+							return 0;
+						}
+					}
+					if (!yla_vm_stack_push(vm, op1)) {
+						return 0;
+					}
+					for (int i=0; i<size; i++)
+					{
+						if (!yla_vm_stack_push(vm, &arr[i])) {
+							return 0;
+						}
+					}
+					size++;
+					if (!yla_vm_stack_push(vm, size)) {
+						return 0;
+					}
+					if (!yla_vm_stack_push(vm, ARRAY)) {
+						return 0;
+					}
+				}
 			}
-			res = op2 + op1;
-			if (!yla_vm_stack_push(vm, res)) {
-				return 0;
+			//2nd - array
+			else if (t1 == ARRAY) {
+				yla_int_type size2;
+				yla_int_type arr[size2];
+				for (int i=0; i<size2; i++)
+				{
+					if (!yla_vm_stack_pull(vm, &arr[i])) {
+						return 0;
+					}
+				}
+				if (!yla_vm_stack_pull(vm, &t2)) {
+					return 0;
+				}
+				//1st - number
+				if (t2 == NUMBER) {
+					if (!yla_vm_stack_pull(vm, &op2)) {
+						return 0;
+					}
+					for (int i=0; i<size2; i++)
+					{
+						if (!yla_vm_stack_push(vm, &arr[i])) {
+							return 0;
+						}
+					}
+					if (!yla_vm_stack_push(vm, op2)) {
+						return 0;
+					}
+					size++;
+					if (!yla_vm_stack_push(vm, size)) {
+						return 0;
+					}
+					if (!yla_vm_stack_push(vm, ARRAY)) {
+						return 0;
+					}
+				}
+				//1st - array
+				else if (t2 == ARRAY) {
+					yla_int_type size1;
+					yla_int_type arr1[size1];
+					for (int i=0; i<size1; i++)
+					{
+						if (!yla_vm_stack_pull(vm, &arr1[i])) {
+							return 0;
+						}
+					}
+					for (int i=0; i<size2; i++)
+					{
+						if (!yla_vm_stack_push(vm, &arr[i])) {
+							return 0;
+						}
+					}
+					
+					for (int i=0; i<size1; i++)
+					{
+						if (!yla_vm_stack_push(vm, &arr1[i])) {
+							return 0;
+						}
+					}
+					size2 += size1;
+					if (!yla_vm_stack_push(vm, size2)) {
+						return 0;
+					}
+					if (!yla_vm_stack_push(vm, ARRAY)) {
+						return 0;
+					}
+				}
 			}
 			break;
 

@@ -36,8 +36,8 @@ static int test_gencode()
     YLATEST_ASSERT_TRUE(buf[0] == 0x12, "put_commd");
     YLATEST_ASSERT_TRUE(buf[1] == 0x34, "put_value");
     YLATEST_ASSERT_TRUE(buf[2] == 0x56, "put_value");
-    YLATEST_ASSERT_TRUE(buf[3] == 0x78, "put_value");
-    YLATEST_ASSERT_TRUE(buf[4] == 0x9a, "put_value");
+    YLATEST_ASSERT_TRUE(buf[3] == 0x78, "put_commd");
+    YLATEST_ASSERT_TRUE(buf[4] == 0x9a, "put_commd");
     
     return 0;
 }
@@ -75,7 +75,7 @@ static int test_init_simple()
     yla_vm vm;
 
     YLATEST_ASSERT_TRUE(yla_vm_init(&vm, prg, HEADER_SIZE + 1), "normal");
-    YLATEST_ASSERT_TRUE(yla_vm_do_command(&vm) == -1, "halt expected")
+    YLATEST_ASSERT_TRUE(yla_vm_do_command(&vm) == -1, "halt expected");
     YLATEST_ASSERT_TRUE(yla_vm_done(&vm), "normal");
 
     return 0;
@@ -93,8 +93,8 @@ static int test_init_simple2()
     yla_vm vm;
 
     YLATEST_ASSERT_TRUE(yla_vm_init(&vm, prg, HEADER_SIZE + 2), "normal");
-    YLATEST_ASSERT_TRUE(yla_vm_do_command(&vm) == 1, "OK expected")
-    YLATEST_ASSERT_TRUE(yla_vm_do_command(&vm) == -1, "halt expected")
+    YLATEST_ASSERT_TRUE(yla_vm_do_command(&vm) == 1, "OK expected");
+    YLATEST_ASSERT_TRUE(yla_vm_do_command(&vm) == -1, "halt expected");
     YLATEST_ASSERT_TRUE(yla_vm_done(&vm), "normal");
 
     return 0;
@@ -112,7 +112,7 @@ static int test_init_simple_run()
     yla_vm vm;
 
     YLATEST_ASSERT_TRUE(yla_vm_init(&vm, prg, HEADER_SIZE + 2), "normal");
-    YLATEST_ASSERT_TRUE(yla_vm_run(&vm), "normal")
+    YLATEST_ASSERT_TRUE(yla_vm_run(&vm), "normal");
     YLATEST_ASSERT_TRUE(yla_vm_done(&vm), "normal");
 
     return 0;
@@ -131,7 +131,7 @@ static int test_push()
     yla_vm vm;
 
     YLATEST_ASSERT_TRUE(yla_vm_init(&vm, prg, HEADER_SIZE + 4), "normal");
-    YLATEST_ASSERT_TRUE(yla_vm_run(&vm), "normal")
+    YLATEST_ASSERT_TRUE(yla_vm_run(&vm), "normal");
     YLATEST_ASSERT_TRUE(yla_vm_done(&vm), "normal");
 
     return 0;
@@ -150,7 +150,7 @@ static int test_get_stack_full()
     yla_vm vm;
 
     YLATEST_ASSERT_TRUE(yla_vm_init(&vm, prg, HEADER_SIZE + 4), "normal");
-    YLATEST_ASSERT_FALSE(yla_vm_run(&vm), "normal")
+    YLATEST_ASSERT_FALSE(yla_vm_run(&vm), "normal");
     YLATEST_ASSERT_TRUE(yla_vm_last_error(&vm) == YLA_VM_ERROR_STACK_FULL, "incorrect error code");
     YLATEST_ASSERT_TRUE(yla_vm_done(&vm), "normal");
 
@@ -168,7 +168,7 @@ static int test_code_limit()
     yla_vm vm;
 
     YLATEST_ASSERT_TRUE(yla_vm_init(&vm, prg, HEADER_SIZE + 1), "normal");
-    YLATEST_ASSERT_FALSE(yla_vm_run(&vm), "normal")
+    YLATEST_ASSERT_FALSE(yla_vm_run(&vm), "normal");
     YLATEST_ASSERT_TRUE(yla_vm_last_error(&vm) == YLA_VM_ERROR_CODE_SEG_EXCEED, "incorrect error code");
     YLATEST_ASSERT_TRUE(yla_vm_done(&vm), "normal");
 
